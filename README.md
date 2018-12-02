@@ -1,2 +1,5 @@
 # Novetus
-This is the Novetus website. Made in Laravel by Carrot. Have fun!
+## Website
+This branch contains the Novetus website. The website is powered by Laravel.
+
+Website made by Carrot.
