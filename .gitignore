@@ -57,3 +57,8 @@ Debug/*
 *.pdb
 *.txt
 *.exe.config
+NovetusLauncher/.vs/NovetusLauncher/v15/Server/sqlite3/storage.ide-wal
+NovetusLauncher/.vs/NovetusLauncher/v15/Server/sqlite3/storage.ide-shm
+NovetusLauncher/.vs/NovetusLauncher/v15/Server/sqlite3/storage.ide
+NovetusLauncher/.vs/NovetusLauncher/v15/Server/sqlite3/db.lock
+NovetusLauncher/.vs/NovetusLauncher/v15/.suo

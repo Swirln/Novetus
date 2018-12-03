@@ -53,18 +53,6 @@ namespace NovetusLauncher
         {
             ConsolePrint("Discord RPC: Error. Reason - " + errorCode + ": " + message, 2);
         }
-
-        public void JoinCallback(string secret)
-        {
-        }
-
-        public void SpectateCallback(string secret)
-        {
-        }
-
-        public void RequestCallback(DiscordRpc.JoinRequest request)
-        {
-        }
         
         void StartDiscord()
         {
@@ -72,9 +60,6 @@ namespace NovetusLauncher
             handlers.readyCallback = ReadyCallback;
             handlers.disconnectedCallback += DisconnectedCallback;
             handlers.errorCallback += ErrorCallback;
-            handlers.joinCallback += JoinCallback;
-            handlers.spectateCallback += SpectateCallback;
-            handlers.requestCallback += RequestCallback;
             DiscordRpc.Initialize(GlobalVars.appid, ref handlers, true, "");
 			
             GlobalVars.presence.largeImageKey = GlobalVars.imagekey_large;
@@ -585,66 +570,50 @@ namespace NovetusLauncher
 			ReadConfigValues();
 		}
 		
-		void ConsolePrint(string text, int type)
+		void ConsolePrint(string text, Color color)
 		{
 			richTextBox1.AppendText("[" + DateTime.Now.ToShortTimeString() + "]", Color.White);
 			richTextBox1.AppendText(" - ", Color.White);
-			if (type == 1)
-			{
-				richTextBox1.AppendText(text, Color.White);
-			}
-			else if (type == 2)
-			{
-				richTextBox1.AppendText(text, Color.Red);
-			}
-			else if (type == 3)
-			{
-				richTextBox1.AppendText(text, Color.Lime);
-			}
-			else if (type == 4)
-			{
-				richTextBox1.AppendText(text, Color.Aqua);
-			}
-			else if (type == 5)
-			{
-				richTextBox1.AppendText(text, Color.Yellow);
-			}
-			
-			richTextBox1.AppendText(Environment.NewLine);
+            richTextBox1.AppendText(text, color);
+            richTextBox1.AppendText(Environment.NewLine);
 		}
 		
-		void StartClient()
+		void StartGame(int type)
 		{
-			string luafile = "";
-			if (!GlobalVars.FixScriptMapMode)
-			{
-				luafile = "rbxasset://scripts\\\\" + GlobalVars.ScriptName + ".lua";
-			}
-			else
-			{
-				luafile = GlobalVars.ClientDir + @"\\" + GlobalVars.SelectedClient + @"\\content\\scripts\\" + GlobalVars.ScriptGenName + ".lua";
-			}
-			
-			string rbxexe = "";
-			if (GlobalVars.LegacyMode == true)
-			{
-				rbxexe = GlobalVars.ClientDir + @"\\" + GlobalVars.SelectedClient + @"\\RobloxApp.exe";
-			}
-			else
-			{
-				rbxexe = GlobalVars.ClientDir + @"\\" + GlobalVars.SelectedClient + @"\\RobloxApp_client.exe";
-			}
-			string quote = "\"";
-			string args = "";
-			if (!GlobalVars.FixScriptMapMode)
-			{
-				args = "-script " + quote + "dofile('" + luafile + "'); " + ScriptGenerator.GetScriptFuncForType(ScriptGenerator.ScriptType.Client, GlobalVars.SelectedClient) + quote;
-			}
-			else
-			{
-				ScriptGenerator.GenerateScriptForClient(ScriptGenerator.ScriptType.Client, GlobalVars.SelectedClient);
-				args = "-script " + quote + luafile + quote;
-			}
+            /*
+             * 1: Client
+             * 2: Server
+             * 3: Solo
+            */
+
+            if (type == 1)
+            {
+                string script = @"rbxasset://...//scripts\\JoinScript.lua";
+                string executable = GlobalVars.ClientDir + @"\\" + GlobalVars.SelectedClient + @"\\" + (GlobalVars.LegacyMode ? "RobloxApp" : "RobloxPlayer");
+                string arguments = ScriptGenerator.MakeScript(script, executable);
+                try
+                {
+                    bool validScript = SecurityFuncs.CheckScriptMD5(GlobalVars.SelectedClient);
+                    bool validClient = SecurityFuncs.CheckClientMD5(GlobalVars.SelectedClient);
+                    if (!validScript || !validClient)
+                    {
+                        ConsolePrint("Failed to launch Novetus because either the script or client has been modified. Shoo, skid!", 2);
+                    }
+
+                    Process client = new Process();
+                    client.StartInfo.FileName = executable;
+                    client.StartInfo.Arguments = arguments;
+                    client.EnableRaisingEvents = true;
+                    client.Exited += new EventHandler(ClientExited);
+                    client.Start();
+                    DiscordRpc.StartPresence();
+                }
+                catch (Exception e)
+                {
+                    ConsolePrint("Failed to launch Novetus. (" + e.Message + ")", 2);
+                }
+            }
+
 			try
 			{
 				ConsolePrint("Client Loaded.", 4);

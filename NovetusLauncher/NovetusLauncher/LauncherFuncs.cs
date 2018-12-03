@@ -733,7 +733,7 @@ namespace NovetusLauncher
 			Studio = 3
 		}
 		
-		public static string GetScriptFuncForType(ScriptType type, string client)
+		public static string MakeArguments(ScriptType type, string )
 		{
 			string rbxexe = "";
 			if (GlobalVars.LegacyMode == true)
@@ -808,23 +808,6 @@ namespace NovetusLauncher
 				return "";
 			}
 		}
-		
-		/*
-		public static string[] GetScriptContents(string scriptPath)
-		{
-			List<string> array = new List<string>();
-			string line = "";
-         	using (StreamReader sr = new StreamReader(scriptPath)) 
-         	{
-            	while ((line = sr.ReadLine()) != null) 
-            	{
-            		array.Add(line);
-            	}
-         	}
-         	
-         	return array.ToArray();
-		}
-		*/
 		
 		private static void ReadConfigValues()
 		{
