@@ -1,6 +1,6 @@
 # Novetus
 ## Corescripts
-This branch include the corescripts from 2012-2014. ONLY the late 2013 corescripts are signed (thanks, MAO). Private key not included.
+This branch include the corescripts from 2012-2014. CoreScripts not signed.
 - 2012
 - 2013
   - Late 2013 corescripts
